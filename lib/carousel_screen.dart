@@ -5,6 +5,7 @@ import 'package:prject1/share_service.dart';
 
 import 'carousel_card.dart';
 import 'carousel_item.dart';
+import 'draggable_floating_action_button.dart';
 
 
 class CarouselScreen extends StatefulWidget {
@@ -310,33 +311,37 @@ class _CarouselScreenState extends State<CarouselScreen> with SingleTickerProvid
       ],
     );
 
-    return Scaffold(
+    return  Scaffold(
       appBar: appBar,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onHorizontalDragEnd: (details) {
-                  if (details.primaryVelocity! > 0) {
-                    goToPreviousPage();
-                  } else if (details.primaryVelocity! < 0) {
-                    goToNextPage();
-                  }
-                },
-                // Double tap to favorite/unfavorite
-                onDoubleTap: () {
-                  toggleFavorite(_currentPage, !_carouselItems[_currentPage].isFavorite);
-                },
-                child: _buildCarouselView(),
-              ),
+      body: Stack(
+        children:[
+          SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onHorizontalDragEnd: (details) {
+                      if (details.primaryVelocity! > 0) {
+                        goToPreviousPage();
+                      } else if (details.primaryVelocity! < 0) {
+                        goToNextPage();
+                      }
+                    },
+                    // Double tap to favorite/unfavorite
+                    onDoubleTap: () {
+                      toggleFavorite(_currentPage, !_carouselItems[_currentPage].isFavorite);
+                    },
+                    child: _buildCarouselView(),
+                  ),
+                ),
+                _buildNavigationControls(),
+              ],
             ),
-            _buildNavigationControls(),
-          ],
-        ),
+          ),
+        ]
       ),
       // Add floating action button for sharing
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: DraggableFloatingActionButton(
         onPressed: () {
           if (_immersiveMode) {
             // Exit immersive mode if active
@@ -350,6 +355,13 @@ class _CarouselScreenState extends State<CarouselScreen> with SingleTickerProvid
           }
         },
         tooltip: _immersiveMode ? 'Exit Fullscreen' : 'Share this image',
+        initialOffset: Offset(
+          MediaQuery.of(context).size.width - 80, // 靠右邊位置
+          MediaQuery.of(context).size.height - 160, // 靠底部但留出一些邊距
+        ),
+        appContext: context, // 傳入當前的 BuildContext
+        appBar: appBar, // 傳入當前的 AppBar
+        backgroundColor: _carouselItems[_currentPage].color, // 按鈕顏色配合當前項目
         child: Icon(_immersiveMode ? Icons.fullscreen_exit : Icons.share),
       ),
     );
