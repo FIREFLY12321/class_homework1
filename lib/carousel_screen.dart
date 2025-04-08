@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:prject1/share_service.dart';
 
 import 'carousel_card.dart';
 import 'carousel_item.dart';
+
 
 class CarouselScreen extends StatefulWidget {
   const CarouselScreen({Key? key}) : super(key: key);
@@ -340,12 +342,10 @@ class _CarouselScreenState extends State<CarouselScreen> with SingleTickerProvid
             // Exit immersive mode if active
             toggleImmersiveMode();
           } else {
-            // Normal sharing functionality
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Sharing ${_carouselItems[_currentPage].imageName}'),
-                duration: const Duration(seconds: 2),
-              ),
+            // Show sharing options using the ShareService
+            ShareService.showShareDialog(
+              context,
+              _carouselItems[_currentPage],
             );
           }
         },
